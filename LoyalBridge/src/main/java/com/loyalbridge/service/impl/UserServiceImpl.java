@@ -1,7 +1,6 @@
 package com.loyalbridge.service.impl;
 
 import com.loyalbridge.model.User;
-import com.loyalbridge.model.UserStatus;
 import com.loyalbridge.repository.UserRepository;
 import com.loyalbridge.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,7 +81,7 @@ public class UserServiceImpl implements UserService {
     public void freezeUser(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        user.setStatus(UserStatus.FROZEN);
+        user.setStatus(User.UserStatus.SUSPENDED);
         userRepository.save(user);
     }
 
@@ -90,7 +89,7 @@ public class UserServiceImpl implements UserService {
     public void unfreezeUser(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        user.setStatus(UserStatus.ACTIVE);
+        user.setStatus(User.UserStatus.ACTIVE);
         userRepository.save(user);
     }
 
@@ -114,7 +113,7 @@ public class UserServiceImpl implements UserService {
     public void updatePoints(Long id, Long points) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        user.setPoints(points);
+        user.setPoints(points.intValue());
         userRepository.save(user);
     }
 } 

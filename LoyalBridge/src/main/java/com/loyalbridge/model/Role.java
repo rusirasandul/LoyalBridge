@@ -19,12 +19,16 @@ public class Role {
     @Column(nullable = false, unique = true)
     private RoleType name;
 
+    public String getName() {
+        return name.name();
+    }
+
     public enum RoleType {
         ROLE_SUPER_ADMIN,
         ROLE_FINANCE_TEAM,
         ROLE_SUPPORT_STAFF,
         ROLE_PARTNER_ADMIN,
-        USER,
-        ADMIN
+        ROLE_USER,
+        ROLE_ADMIN
     }
 } 

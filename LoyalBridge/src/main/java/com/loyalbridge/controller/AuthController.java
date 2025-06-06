@@ -1,11 +1,11 @@
 package com.loyalbridge.controller;
 
+import com.loyalbridge.dto.*;
 import com.loyalbridge.model.User;
 import com.loyalbridge.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,8 +21,8 @@ public class AuthController {
     @PostMapping("/login")
     @Operation(summary = "Login with email and password")
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest loginRequest) {
-        String token = authService.login(loginRequest.getEmail(), loginRequest.getPassword());
-        return ResponseEntity.ok(new JwtResponse(token));
+        AuthResponse response = authService.authenticate(loginRequest);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/register")
@@ -58,51 +58,5 @@ public class AuthController {
     public ResponseEntity<?> changePassword(@Valid @RequestBody ChangePasswordRequest request) {
         authService.changePassword(request.getEmail(), request.getOldPassword(), request.getNewPassword());
         return ResponseEntity.ok().build();
-    }
-
-    @Data
-    public static class LoginRequest {
-        private String email;
-        private String password;
-    }
-
-    @Data
-    public static class JwtResponse {
-        private String token;
-
-        public JwtResponse(String token) {
-            this.token = token;
-        }
-    }
-
-    @Data
-    public static class OtpResponse {
-        private String otp;
-
-        public OtpResponse(String otp) {
-            this.otp = otp;
-        }
-    }
-
-    @Data
-    public static class OtpValidationRequest {
-        private String email;
-        private String otp;
-    }
-
-    @Data
-    public static class OtpValidationResponse {
-        private boolean valid;
-
-        public OtpValidationResponse(boolean valid) {
-            this.valid = valid;
-        }
-    }
-
-    @Data
-    public static class ChangePasswordRequest {
-        private String email;
-        private String oldPassword;
-        private String newPassword;
     }
 } 

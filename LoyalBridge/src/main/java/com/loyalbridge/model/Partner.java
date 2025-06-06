@@ -26,14 +26,17 @@ public class Partner {
     @Column(unique = true)
     private String email;
 
+    @NotBlank(message = "API URL is required")
+    private String apiUrl;
+
     @NotBlank(message = "Authentication method is required")
-    private String authMethod;
+    private String authenticationMethod;
 
     @NotNull(message = "Conversion rate is required")
     @Positive(message = "Conversion rate must be positive")
     private double conversionRate;
 
-    private boolean active = true;
+    private boolean isEnabled = true;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;

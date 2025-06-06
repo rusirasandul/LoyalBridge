@@ -20,9 +20,13 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "Name is required")
-    @Size(min = 2, max = 100, message = "Name must be between 2 and 100 characters")
-    private String name;
+    @NotBlank(message = "First name is required")
+    @Size(min = 2, max = 50, message = "First name must be between 2 and 50 characters")
+    private String firstName;
+
+    @NotBlank(message = "Last name is required")
+    @Size(min = 2, max = 50, message = "Last name must be between 2 and 50 characters")
+    private String lastName;
 
     @NotBlank(message = "Email is required")
     @Email(message = "Invalid email format")
@@ -39,7 +43,7 @@ public class User {
     private int points = 0;
 
     @Enumerated(EnumType.STRING)
-    private Role role = Role.USER;
+    private UserStatus status = UserStatus.ACTIVE;
 
     private boolean highRisk = false;
 
@@ -69,5 +73,12 @@ public class User {
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
+    }
+
+    public enum UserStatus {
+        ACTIVE,
+        INACTIVE,
+        SUSPENDED,
+        DELETED
     }
 } 

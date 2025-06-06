@@ -25,8 +25,8 @@ public class AuthService {
             if (!passwordEncoder.matches(req.getPassword(), adminUser.getPassword())) {
                 throw new RuntimeException("Invalid credentials");
             }
-            String token = jwtUtil.generateToken(adminUser.getEmail(), adminUser.getRole());
-            return new AuthResponse(token, adminUser.getRole().name());
+            String token = jwtUtil.generateToken(adminUser.getEmail(), adminUser.getRole().getName());
+            return new AuthResponse(token, adminUser.getRole().getName());
         }
 
         // If not admin, try regular user
@@ -37,7 +37,52 @@ public class AuthService {
             throw new RuntimeException("Invalid credentials");
         }
 
-        String token = jwtUtil.generateToken(user.getEmail(), user.getRole());
-        return new AuthResponse(token, user.getRole().name());
+        // Get the first role from the user's roles set
+        String roleName = user.getRoles().stream()
+                .findFirst()
+                .map(role -> role.getName())
+                .orElse("ROLE_USER");
+
+        String token = jwtUtil.generateToken(user.getEmail(), roleName);
+        return new AuthResponse(token, roleName);
+    }
+
+    public User register(User user) {
+        if (userRepo.existsByEmail(user.getEmail())) {
+            throw new RuntimeException("Email already exists");
+        }
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        return userRepo.save(user);
+    }
+
+    public void logout(String token) {
+        // In a stateless JWT implementation, logout is handled client-side
+        // by removing the token. This method is kept for future implementation
+        // of token blacklisting if needed.
+    }
+
+    public String generateOtp(String email) {
+        // Generate a 6-digit OTP
+        String otp = String.format("%06d", (int) (Math.random() * 1000000));
+        // TODO: Store OTP in database with expiration
+        // TODO: Send OTP via email
+        return otp;
+    }
+
+    public boolean validateOtp(String email, String otp) {
+        // TODO: Validate OTP from database
+        return true;
+    }
+
+    public void changePassword(String email, String oldPassword, String newPassword) {
+        User user = userRepo.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+            throw new RuntimeException("Invalid old password");
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepo.save(user);
     }
 } 

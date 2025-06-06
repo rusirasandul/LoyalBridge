@@ -7,10 +7,10 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "admin_users")
 public class AdminUser extends User {
-    @Enumerated(EnumType.STRING)
-    private Role.RoleType role;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "role_id")
+    private Role role;
 
-    private Boolean otpEnabled;
+    private Boolean otpEnabled = false;
 } 

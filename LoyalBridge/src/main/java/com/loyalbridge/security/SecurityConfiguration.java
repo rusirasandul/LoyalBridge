@@ -11,16 +11,23 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import com.loyalbridge.repository.UserRepository;
+import com.loyalbridge.model.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import java.util.Arrays;
 
 @Configuration
-public class SecurityConfig {
+public class SecurityConfiguration {
 
     private final JwtFilter jwtFilter;
+    private final UserRepository userRepository;
 
-    public SecurityConfig(JwtFilter jwtFilter) {
+    public SecurityConfiguration(JwtFilter jwtFilter, UserRepository userRepository) {
         this.jwtFilter = jwtFilter;
+        this.userRepository = userRepository;
     }
 
     @Bean
@@ -57,5 +64,12 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
+    }
+
+    @Bean
+    public UserDetailsService userDetailsService() {
+        return username -> userRepository.findByEmail(username)
+                .map(user -> (UserDetails) user)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 } 
